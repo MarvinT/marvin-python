@@ -6,6 +6,7 @@ from sklearn.cross_validation import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import marvin as m
+import cPickle as Pickle
 
 
 def parse_stim_id(df, stim_id='stim_id', end='end', morph_dim='morph_dim', morph_pos='morph_pos', lesser_dim='lesser_dim', greater_dim='greater_dim'):
@@ -16,6 +17,7 @@ def parse_stim_id(df, stim_id='stim_id', end='end', morph_dim='morph_dim', morph
     df[greater_dim] = df[~df[end]][morph_dim].str[1]
 
 stim_blacklist = ['G117-56']
+
 
 def load_ephys(block_path, good_clusters=None, collapse_endpoints=False, shuffle_endpoints=False):
     assert not (collapse_endpoints and shuffle_endpoints)
@@ -114,3 +116,28 @@ def cluster_accuracy(cluster, cluster_group, morphs, max_num_reps, n_folds=10, n
     for col in dtypes:
         accuracies[col] = accuracies[col].astype(dtypes[col])
     return accuracies
+
+block_paths = ['/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site02_Z1880__B1101_cat_P01_S02_1',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site03_Z2000__B1101_cat_P01_S03_2',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site04_Z2300__B1101_cat_P01_S04_3',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site02_Z2050__B1101_cat_P02_S02_1',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site03_Z2222__B1101_cat_P02_S03_2',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site04_Z2410__B1101_cat_P02_S04_3',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site05_Z3072__B1101_cat_P02_S05_4',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site02_Z2337__B1218_cat_P01_S02_1',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site04_Z2583__B1218_cat_P01_S04_2',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site05_Z2950__B1218_cat_P01_S05_3',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site06_Z3368__B1218_cat_P01_S06_4',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site06_Z3368__B1218_cat_P01_S06_5',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site07_Z3721__B1218_cat_P01_S07_6',
+               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site08_Z4323__B1218_cat_P01_S08_7',
+               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site02_Z3100__B1134_cat_P01_S02_1',
+               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site03_Z3200__B1134_cat_P01_S03_1']
+
+
+def load_cluster_accuracies():
+    with open('all_accuracies.pkl', 'rb') as f:
+        accuracies = Pickle.load(f)
+    cluster_accuracies = {block_path: accuracies[block_path].groupby(
+        'cluster').agg(np.mean).sort_values('accuracy') for block_path in accuracies}
+    return accuracies, cluster_accuracies
