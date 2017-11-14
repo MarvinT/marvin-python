@@ -132,7 +132,8 @@ block_paths = ['/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Si
                '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site07_Z3721__B1218_cat_P01_S07_6',
                '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site08_Z4323__B1218_cat_P01_S08_7',
                '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site02_Z3100__B1134_cat_P01_S02_1',
-               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site03_Z3200__B1134_cat_P01_S03_1']
+               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site03_Z3200__B1134_cat_P01_S03_1',
+               '/mnt/cube/mthielk/analysis/B1055/kwik/Pen03_Rgt_AP2500_ML100__Site02_Z3000__B1055_cat_P03_S02_1']
 
 
 def load_cluster_accuracies():
