@@ -28,6 +28,10 @@ def load_ephys(block_path, good_clusters=None, collapse_endpoints=False, shuffle
 
     stims = rigid_pandas.load_acute_stims(block_path)
 
+    fs = core.load_fs(block_path)
+    stims['stim_duration'] = stims['stim_end'] - stims['stim_start']
+    rigid_pandas.timestamp2time(stims, fs, 'stim_duration')
+
     for rec, rec_group in stims.groupby('recording'):
         try:
             rec_group['stim_name'].astype(float)
@@ -35,15 +39,15 @@ def load_ephys(block_path, good_clusters=None, collapse_endpoints=False, shuffle
             spikes = spikes[spikes['recording'] != rec]
             stims = stims[stims['recording'] != rec]
         except:
-            for bad_stim in stim_blacklist:
-                if bad_stim in rec_group['stim_name'].values:
-                    print 'going to have to remove stim recording ', rec, ' because of ', bad_stim
-                    spikes = spikes[spikes['recording'] != rec]
-                    stims = stims[stims['recording'] != rec]
-
-    fs = core.load_fs(block_path)
-    stims['stim_duration'] = stims['stim_end'] - stims['stim_start']
-    rigid_pandas.timestamp2time(stims, fs, 'stim_duration')
+            if (rec_group['stim_duration'] > .41).any():
+              print 'removing long stim recording ', rec
+              spikes = spikes[spikes['recording'] != rec]
+              stims = stims[stims['recording'] != rec]
+            # for bad_stim in stim_blacklist: # unnecessary now with stim duration check
+            #     if bad_stim in rec_group['stim_name'].values:
+            #         print 'going to have to remove stim recording ', rec, ' because of ', bad_stim
+            #         spikes = spikes[spikes['recording'] != rec]
+            #         stims = stims[stims['recording'] != rec]
 
     stim_ids = stims['stim_name']
     stim_ids = stim_ids.str.replace('_rec', '')
@@ -121,7 +125,7 @@ block_paths = ['/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Si
                '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site03_Z2000__B1101_cat_P01_S03_2',
                '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site04_Z2300__B1101_cat_P01_S04_3',
                '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site02_Z2050__B1101_cat_P02_S02_1',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site03_Z2222__B1101_cat_P02_S03_2',
+               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site03_Z2222__B1101_cat_P02_S03_1',
                '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site04_Z2410__B1101_cat_P02_S04_3',
                '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site05_Z3072__B1101_cat_P02_S05_4',
                '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site02_Z2337__B1218_cat_P01_S02_1',
