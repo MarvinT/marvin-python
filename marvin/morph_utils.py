@@ -137,7 +137,11 @@ block_paths = ['/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Si
                '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site08_Z4323__B1218_cat_P01_S08_7',
                '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site02_Z3100__B1134_cat_P01_S02_1',
                '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site03_Z3200__B1134_cat_P01_S03_1',
-               '/mnt/cube/mthielk/analysis/B1055/kwik/Pen03_Rgt_AP2500_ML100__Site02_Z3000__B1055_cat_P03_S02_1']
+               # '/mnt/cube/mthielk/analysis/B1055/kwik/Pen03_Rgt_AP2500_ML100__Site02_Z3000__B1055_cat_P03_S02_1',
+               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site02_Z1950__B1088_cat_P01_S02_1',
+               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site03_Z2377__B1088_cat_P01_S03_2',
+               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site04_Z2650__B1088_cat_P01_S04_3',
+               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site05_Z3000__B1088_cat_P01_S05_4']
 
 
 def load_cluster_accuracies():
