@@ -7,6 +7,7 @@ from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import marvin as m
 import cPickle as Pickle
+from glob import glob
 
 
 def parse_stim_id(df, stim_id='stim_id', end='end', morph_dim='morph_dim', morph_pos='morph_pos', lesser_dim='lesser_dim', greater_dim='greater_dim'):
@@ -121,27 +122,21 @@ def cluster_accuracy(cluster, cluster_group, morphs, max_num_reps, n_folds=10, n
         accuracies[col] = accuracies[col].astype(dtypes[col])
     return accuracies
 
-block_paths = ['/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site02_Z1880__B1101_cat_P01_S02_1',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site03_Z2000__B1101_cat_P01_S03_2',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen01_Lft_AP2500_ML750__Site04_Z2300__B1101_cat_P01_S04_3',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site02_Z2050__B1101_cat_P02_S02_1',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site03_Z2222__B1101_cat_P02_S03_1',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site04_Z2410__B1101_cat_P02_S04_3',
-               '/mnt/cube/mthielk/analysis/B1101/kwik/Pen02_Lft_AP2501_ML500__Site05_Z3072__B1101_cat_P02_S05_4',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site02_Z2337__B1218_cat_P01_S02_1',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site04_Z2583__B1218_cat_P01_S04_2',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site05_Z2950__B1218_cat_P01_S05_3',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site06_Z3368__B1218_cat_P01_S06_4',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site06_Z3368__B1218_cat_P01_S06_5',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site07_Z3721__B1218_cat_P01_S07_6',
-               '/mnt/cube/mthielk/analysis/B1218/kwik/Pen01_Lft_AP2500_ML160__Site08_Z4323__B1218_cat_P01_S08_7',
-               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site02_Z3100__B1134_cat_P01_S02_1',
-               '/mnt/cube/mthielk/analysis/B1134/kwik/Pen01_Lft_AP2500_ML500__Site03_Z3200__B1134_cat_P01_S03_1',
-               # '/mnt/cube/mthielk/analysis/B1055/kwik/Pen03_Rgt_AP2500_ML100__Site02_Z3000__B1055_cat_P03_S02_1',
-               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site02_Z1950__B1088_cat_P01_S02_1',
-               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site03_Z2377__B1088_cat_P01_S03_2',
-               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site04_Z2650__B1088_cat_P01_S04_3',
-               '/mnt/cube/mthielk/analysis/B1088/kwik/Pen01_Lft_AP2500_ML120__Site05_Z3000__B1088_cat_P01_S05_4']
+
+birds = [
+          'B1101',
+          'B1218', 
+          'B1134',
+          # 'B1055', 
+          'B1088',
+          'st1107',
+          'B1096',
+          'B1229'
+        ]
+
+block_paths = []
+for bird in birds:
+    block_paths += glob('/mnt/cube/mthielk/analysis/%s/kwik/*' % (bird,))
 
 
 def load_cluster_accuracies():
