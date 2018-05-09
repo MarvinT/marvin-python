@@ -134,6 +134,14 @@ birds = [
           'B1229'
         ]
 
+training = {}
+for subj in ['B979', 'B1107', 'B1082', 'B1218']:
+    training[subj] = 'ABCD|EFGH'
+for subj in ['B1088', 'B1105']:
+    training[subj] = 'ABGH|EFCD'
+for subj in ['B1101', 'B1222']:
+    training[subj] = 'ABEF|CDGH'
+
 block_paths = []
 for bird in birds:
     block_paths += glob('/mnt/cube/mthielk/analysis/%s/kwik/*' % (bird,))
