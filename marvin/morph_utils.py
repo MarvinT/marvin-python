@@ -166,7 +166,7 @@ def create_neural_rep(spikes, num_samples=50):
     for motif, motif_group in spikes.groupby('stim_id'):
         for (rec, stim_pres), trial_group in motif_group.groupby(['recording', 'stim_presentation']):
             cluster_groups = trial_group.groupby('cluster')
-            temp = cluster_groups['stim_aligned_time'].apply(lambda x: filtered_response(x.values)(t))
+            temp = cluster_groups['stim_aligned_time'].apply(lambda x: m.filtered_response(x.values)(t))
             for i, (cluster, cluster_group) in enumerate(cluster_groups):
                 X[idx,clust_map[cluster]*num_samples:(clust_map[cluster]+1)*num_samples] = temp.values[i]
             labels[idx] = motif
