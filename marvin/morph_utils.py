@@ -142,6 +142,10 @@ for subj in ['B1088', 'B1105']:
 for subj in ['B1101', 'B1222']:
     training[subj] = 'ABEF|CDGH'
 
+behave_subjs = ['B979', 'B1107', 'B1082', 'B1218', 'B1222', 'B1101', 'B1088', 'B1105']
+behave_colors = ["nice blue", "windows blue", "off blue", "stormy blue", "fern", "faded green", "dusty purple", "dark lilac", "red"]
+behave_color_map = {subj:color for subj, color in zip(behave_subjs, behave_colors)}
+
 block_paths = []
 for bird in birds:
     block_paths += glob('/mnt/cube/mthielk/analysis/%s/kwik/*' % (bird,))
