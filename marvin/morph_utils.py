@@ -8,6 +8,7 @@ import pandas as pd
 import marvin as m
 import cPickle as Pickle
 from glob import glob
+import seaborn as sns
 
 
 def parse_stim_id(df, stim_id='stim_id', end='end', morph_dim='morph_dim', morph_pos='morph_pos', lesser_dim='lesser_dim', greater_dim='greater_dim'):
@@ -144,7 +145,7 @@ for subj in ['B1101', 'B1222']:
 
 behave_subjs = ['B979', 'B1107', 'B1082', 'B1218', 'B1222', 'B1101', 'B1088', 'B1105']
 behave_colors = ["nice blue", "windows blue", "off blue", "stormy blue", "fern", "faded green", "dusty purple", "dark lilac", "red"]
-behave_color_map = {subj:color for subj, color in zip(behave_subjs, behave_colors)}
+behave_color_map =  {subj:color for subj, color in zip(behave_subjs, sns.xkcd_palette(behave_colors))}
 
 block_paths = []
 for bird in birds:
