@@ -1,4 +1,6 @@
 from folder_utils import ensure_folder_exists
 from figure_utils import savefig
 from spike_utils import filtered_response
+from four_p_logistic import four_param_logistic, normalized_four_param_logistic
 import morph_utils as morph
+import held_out_utils as held_out
