@@ -241,5 +241,5 @@ def logistic_dim_discriminants(X, labels):
 
 def logistic_dim_reduction(X, labels):
     dim_discriminants = logistic_dim_discriminants(X, labels)
-    proj_matrix = np.array([dim_discriminants[dim] / np.linalg.norm(dim_discriminants[dim]) for dim in temp]).squeeze().T
+    proj_matrix = np.array([dim_discriminants[dim] / np.linalg.norm(dim_discriminants[dim]) for dim in dim_discriminants]).squeeze().T
     return X.dot(proj_matrix)
