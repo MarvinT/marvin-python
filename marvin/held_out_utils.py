@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import sklearn as skl
 import sklearn.linear_model
+from sklearn.linear_model import LogisticRegression
 import matplotlib.pylab as plt
 import seaborn as sns
 import itertools
@@ -134,8 +135,7 @@ def fit_held_outs(merged_df, representations, accum='sse', tol=1e-4):
         test_x = representations[held_out_df.index,:]
         test_y = held_out_df['p_right']
 
-        model = skl.linear_model.LogisticRegression(penalty='l2', tol=tol, 
-                                                    warm_start=True).fit(train_x, train_y, sample_weight=train_weights)
+        model = LogisticRegression(penalty='l2', tol=tol, warm_start=True).fit(train_x, train_y, sample_weight=train_weights)
         predicted_values = model.predict_proba(test_x)[:,1]
         
         dim_list.append(held_out_dim)
@@ -221,3 +221,25 @@ def plot_ks_null_dist(shuffled_df, unshuffle_results_by_subj, combined_subj_plot
         ax.legend();
         ax.set_xlim([0, ax.get_xlim()[1]]);
         ax.set_title('ks stat null dist by subj');
+
+def logistic_dim_discriminants(X, labels):
+    dim_discriminants = {}
+    labels = pd.Series(labels)
+    morph_dims = labels.str[:2].unique()
+    stim_ids, _ = m.morph.separate_endpoints(labels)
+    motif_map = pd.DataFrame(stim_ids, columns=['motif']).groupby('motif')
+
+    for morph_dim in morph_dims:
+        lesser_dim, greater_dim = morph_dim
+        endpoints_data = np.concatenate([X[motif_map.get_group(dim).index, :] for dim in morph_dim])
+        endpoints_label = np.concatenate([np.ones_like(motif_map.get_group(dim).index) * (dim == morph_dim[1]) for dim in morph_dim])
+        model = LogisticRegression(penalty='l2')
+        model.fit(endpoints_data, endpoints_label)
+        dim_discriminants[morph_dim] = model.coef_
+
+    return dim_discriminants
+
+def logistic_dim_reduction(X, labels):
+    dim_discriminants = logistic_dim_discriminants(X, labels)
+    proj_matrix = np.array([dim_discriminants[dim] / np.linalg.norm(dim_discriminants[dim]) for dim in temp]).squeeze().T
+    return X.dot(proj_matrix)
