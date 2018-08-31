@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import scipy as sp
 import sklearn as skl
 import sklearn.linear_model
 from sklearn.linear_model import LogisticRegression
