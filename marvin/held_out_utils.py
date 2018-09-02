@@ -126,7 +126,6 @@ def fit_held_outs(merged_df, representations, accum='sse', tol=1e-4):
     error_list = []
     dim_list = []
     for held_out_dim in mbdf['shuffled_dim'].unique():
-        print held_out_dim
         training_df = mbdf[mbdf['shuffled_dim'] != held_out_dim]
         held_out_df = mbdf[mbdf['shuffled_dim'] == held_out_dim]
         train_x = np.concatenate([representations[training_df.index,:], representations[training_df.index,:]])
