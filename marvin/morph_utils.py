@@ -55,9 +55,7 @@ def load_ephys(block_path, good_clusters=None, collapse_endpoints=False, shuffle
     stim_ids = stim_ids.str.replace('_rec', '')
     stim_ids = stim_ids.str.replace('_rep\d\d', '')
     if collapse_endpoints:
-        stim_ids = stim_ids.str.replace('[a-i]001', '')
-        for motif in 'abcdefgh':
-            stim_ids = stim_ids.str.replace('[a-i]%s128' % (motif), motif)
+        stim_ids, _ = separate_endpoints(stim_ids)
     stims['stim_id'] = stim_ids
     parse_stim_id(stims)
 
@@ -87,6 +85,14 @@ def load_ephys(block_path, good_clusters=None, collapse_endpoints=False, shuffle
     rigid_pandas.timestamp2time(spikes, fs, 'stim_aligned_time')
 
     return spikes
+
+
+def separate_endpoints(stim_id_series):
+    stim_ids = stim_id_series.str.replace('[a-i]001', '')
+    for motif in 'abcdefgh':
+        stim_ids = stim_ids.str.replace('[a-i]%s128' % (motif), motif)
+    end = stim_ids.isin(list('abcdefghi'))
+    return stim_ids, end
 
 
 def cluster_accuracy(cluster, cluster_group, morphs, max_num_reps, n_folds=10, n_dim=50, tau=.01, stim_length=.4):
