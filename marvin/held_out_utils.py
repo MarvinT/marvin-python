@@ -110,14 +110,14 @@ def hold_one_out_psychometric_fit_dist_all_subj(representations, labels, psychom
                                                               n_jobs=n_jobs))
     return pd.concat(all_samples)
 
-def merge_df(label_df, behavior_df, shuffle=False):
+def merge_shuffle_df(label_df, behavior_df, shuffle=False):
     shuffle_effective_dim(label_df, shuffle=shuffle)
     shuffle_effective_dim(behavior_df, shuffle=False)
     return pd.merge(label_df, behavior_df[['shuffled_dim', 'effective_pos', 'p_left', 'p_right']], 
                         on=['shuffled_dim', 'effective_pos'], how='left', validate='m:1')
 
 def calc_samples(representations, label_df, behavior_df, idx, shuffle=False, tol=1e-4):
-    error_list, dim_list = fit_held_outs(merge_df(label_df, behavior_df, shuffle=shuffle),
+    error_list, dim_list = fit_held_outs(merge_shuffle_df(label_df, behavior_df, shuffle=shuffle),
                                representations, tol=tol)
     return pd.DataFrame(data={'errors':error_list, 'held_out_dim':dim_list, 'shuffle_index':idx, 'shuffled':shuffle})
 
@@ -166,7 +166,7 @@ def plot_held_out(labels, representations, behavior_subj, psychometric_params):
     print 'labeled'
     behavior_df = make_behavior_df(behavior_subj, psychometric_params)
     print 'behavior_df'
-    merged_df = merge_df(label_df, behavior_df)
+    merged_df = merge_shuffle_df(label_df, behavior_df)
     print 'merged'
     held_out_df = gen_held_out_df(merged_df, representations, melt=True)
     print 'held_out ... now plotting'
@@ -194,30 +194,39 @@ def shuffle_ks_df(samples_df):
         for i, ((shuffle_index, subj), group) in enumerate(grouped):
             temp_results[i] = sp.stats.mstats.ks_twosamp(group['errors'].values, shuffled, alternative='greater')[0]
             temp_subj_results[i] = subj
+
+        df  = pd.DataFrame(columns=['subj', 'ks_stat'])
+        df['subj'] = temp_subj_results
+        df['ks_stat'] = temp_results
+
         if was_shuffled:
-            shuffle_results_by_subj = temp_results
-            shuffle_subj_results = temp_subj_results
+            shuffle_df = df
         else:
-            unshuffle_results_by_subj = temp_results
-            unshuffle_subj_results = temp_subj_results
+            unshuffle_df = df
 
-    shuffled_df = pd.DataFrame(columns=['subj', 'ks_stat'])
-    shuffled_df['subj'] = shuffle_subj_results
-    shuffled_df['ks_stat'] = shuffle_results_by_subj
-    return shuffled_df, unshuffle_results_by_subj
+    return shuffled_df, unshuffle_df
 
-def plot_ks_null_dist(shuffled_df, unshuffle_results_by_subj, combined_subj_plot=False):
+def merge_ks_dfs(shuffled_df, unshuffle_df, reset_index=True):
+    temp_df = shuffled_df.merge(unshuffle_df, on=('subj'), suffixes=('_shuffled', '_unshuffled'))
+    temp_df['p'] = temp_df['ks_stat_shuffled'] > temp_df['ks_stat_unshuffled']
+    ks_df = temp_df.groupby('subj').apply(np.mean)
+    if reset_index:
+        ks_df = ks_df.reset_index()
+    del ks_df['ks_stat_shuffled']
+    return ks_df
+
+def plot_ks_null_dist(shuffled_df, unshuffle_df, combined_subj_plot=False):
     if combined_subj_plot:
         f = plt.figure(figsize=(10,10))
         ax = f.gca()
-    unshuffle_dict = {subj:d for d, subj in zip(unshuffle_results_by_subj, shuffled_df['subj'].values)}
+    ks_df = merge_ks_dfs(shuffled_df, unshuffle_df, reset_index=False)
     for subj, subj_group in shuffled_df.groupby('subj'):
         if not combined_subj_plot:
             f = plt.figure(figsize=(10,10))
             ax = f.gca()
-        print subj, float(np.sum(subj_group['ks_stat'] > unshuffle_dict[subj])) / len(subj_group)
+        print subj, float(np.sum(subj_group['ks_stat'] > ks_df.loc[subj, 'ks_stat_unshuffled'])) / len(subj_group)
         sns.distplot(subj_group['ks_stat'], norm_hist=True, label=subj, color=m.morph.behave_color_map[subj])
-        plt.axvline(x=unshuffle_dict[subj], color=m.morph.behave_color_map[subj])
+        plt.axvline(x=ks_df.loc[subj, 'ks_stat_unshuffled'], color=m.morph.behave_color_map[subj])
         ax.legend();
         ax.set_xlim([0, ax.get_xlim()[1]]);
         ax.set_title('ks stat null dist by subj');
